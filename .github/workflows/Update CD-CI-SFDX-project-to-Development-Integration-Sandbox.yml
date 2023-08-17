@@ -141,7 +141,12 @@ jobs:
               # run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
               # if: ${{ env.PR_TARGETBRANCH == 'CI' || env.PR_TARGETBRANCH == 'QA' }}
       run: sfdx auth:sfdxurl:store -f ./authorizations/authorize_qa.txt -a GITHUB-1
-            
+       
+    # #CI VALIDATION STEP
+    - name: 'Check Only CI without Test Class'        
+    #   if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
+      run: |
+          sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly  --json
 
  #   - name: Salesforce SFDX CLI Action
  #     uses: sfdx-actions/setup-sfdx@v1
