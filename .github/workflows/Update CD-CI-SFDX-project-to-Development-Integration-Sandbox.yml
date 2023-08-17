@@ -1,0 +1,100 @@
+name: CD CI SFDX project to Development Integration Sandbox
+
+on:
+  push:
+    branches: [ main ]
+   #::TODO:: turn back on after done testing
+   # paths:
+   #     - 'force-app/**'
+  pull_request:
+        types: [opened, synchronize, reopened]
+        branches:
+            - main
+        paths:
+            - 'force-app/**'
+
+jobs:
+  
+  Source_Code_Analysis:
+    runs-on: ubuntu-latest
+    steps:
+         # Checkout the code in the pull request
+      - name: 'Checkout source code'
+        uses: actions/checkout@v2
+
+      # Cache node_modules to speed up the process
+      - name: Restore node_modules cache
+        id: cache-npm
+        uses: actions/cache@v1
+        with:
+            path: node_modules
+            key: npm-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+                npm-${{ env.cache-name }}-
+                npm-
+      # Install npm dependencies for Prettier and Jest
+      - name: 'Install npm dependencies'
+        if: steps.cache-npm.outputs.cache-hit != 'true'
+        run: npm install
+
+      # Prettier formatting
+     # - name: 'Code formatting verification with Prettier'
+      #  run: npm run prettier:verify
+
+      # ESlint
+     # - name: 'Lint Lightning Web Components'
+     #   run: npm run lint:lwc
+
+      # Unit tests
+     # - name: 'Unit test Lightning Web Components'
+     #   run: npm run test:unit:coverage
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2      
+
+    # DEVHUB_TOKEN is to be created on your local machine by running:
+    # sfdx force:auth:web:login
+    # sfdx force:force:org:display -u <yourusername> --verbose
+    # copying Sfdx Auth Url to the secret DEVHUB_TOKEN
+    - name: Write the token into a file
+      run: 'echo ${{ secrets.DEVHUB_TOKEN}} > DEVHUB_SFDX_URL.txt'
+
+    - name: Install Salesforce CLI
+      run: |
+        wget https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+        mkdir sfdx-cli
+        tar xJf sfdx-linux-amd64.tar.xz -C sfdx-cli --strip-components 1
+        ./sfdx-cli/install
+
+    - name: Auth with the DevHub
+      run: 'sfdx force:auth:sfdxurl:store -f DEVHUB_SFDX_URL.txt -a DevHub -d  > /dev/null'
+
+    - name: Create scratch org
+      run: 'sfdx force:org:create -f config/project-scratch-def.json -a my-scratch'
+      
+    - name: Push source
+      run: 'sfdx force:source:push -u my-scratch'
+
+    - name: 'Assign Permissionset'
+      run: 'sfdx force:user:permset:assign -n recipes'
+
+    - name: 'Import test data'
+      run: 'sfdx force:data:tree:import -p ./data/data-plan.json'
+
+    - name: Run tests
+      run: 'sfdx force:apex:test:run -u my-scratch --resultformat human'
+
+      #Housekeeping
+    - name: Always Delete scratch org
+      if: always()
+      run: 'sfdx force:org:delete -u my-scratch --noprompt'
+      
+    - name: Delete auth file
+      if: always()
+      run: rm -f ./DEVHUB_SFDX_URL.txt 
+
+
+ #   - name: Salesforce SFDX CLI Action
+ #     uses: sfdx-actions/setup-sfdx@v1
