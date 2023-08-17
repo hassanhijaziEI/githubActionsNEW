@@ -11,7 +11,7 @@ on:
       # The branches filter allows to specify that this workflow should only
       # run if the branch name is "CI". This way we prevent this workflow
       # from running when PRs are opened on other branches
-      branches: [ CI, QA, UAT ]
+      branches: [ main ]
       # We only care about changes to the force-app directory, which is the
       # root directory of the sfdx project. This prevents the job from running
       # when changing non-salesforce files (like this yml file).
@@ -137,21 +137,24 @@ jobs:
             - name: 'Populate auth file with SFDX_URL secret of integration org'
               shell: bash
               run: |
-                  # echo ${{ secrets.SFDX_INTEGRATION_URL}} > ./SFDX_INTEGRATION_URL.txt
+                  # echo ${{ secrets.DEVHUB_TOKEN}} > ./SFDX_INTEGRATION_URL.txt
                   echo ./authorizations/authorize_qa.txt
 
             # Authenticate to org using the URL stored in the text file
             - name: 'Authenticate to Integration-QA Org'
               # run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
-              if: ${{ env.PR_TARGETBRANCH == 'CI' || env.PR_TARGETBRANCH == 'QA' }}
+              # if: ${{ env.PR_TARGETBRANCH == 'CI' || env.PR_TARGETBRANCH == 'QA' }}
               run: sfdx auth:sfdxurl:store -f ./authorizations/authorize_qa.txt -s -a integration_qa
             
             #Authenticate to UAT if PR opened to UAT
             # Authenticate to org using the URL stored in the text file
-            - name: 'Authenticate to UAT Org'
-              # run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
-              if: ${{ env.PR_TARGETBRANCH == 'UAT' }}
-              run: sfdx auth:sfdxurl:store -f ./authorizations/authorize_uat.txt -s -a integration_uat
+
+
+            # - name: 'Authenticate to UAT Org'
+            #   # run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
+            #   if: ${{ env.PR_TARGETBRANCH == 'UAT' }}
+            #   run: sfdx auth:sfdxurl:store -f ./authorizations/authorize_uat.txt -s -a integration_uat
+
 
             # We use SFDX Git Delta to create a directory with only the metadata that has changed.
             # this allows us to deploy only those changes, as opposed to deploying the entire branch. 
@@ -182,53 +185,55 @@ jobs:
             # We do a check-only deploy and we only run the tests specified in the PR
             # If the env variable does not equal 'all', we know that there is a list of
             # tests that can be run
+
             
-            - name: 'Check Only UAT'
-              run: |
-                  echo " test ${{env.APEX_TESTS}}"
-                  echo " branch ${{env.PR_TARGETBRANCH}}"
-
-            #CI VALIDATION STEP
-            - name: 'Check Only CI without Test Class'
-              if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
-              run: |
-                  sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly  --json
-
-            - name: 'Check Only CI with Test Class'
-              if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS != 'all' && env.APEX_TESTS != '' }}
-              run: |
-                  sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
             
-            - name: 'Deploy destructive changes (if any)'
-              if: ${{ env.PR_TARGETBRANCH == 'CI' }}
-              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings 
+            # - name: 'Check Only UAT'
+            #   run: |
+            #       echo " test ${{env.APEX_TESTS}}"
+            #       echo " branch ${{env.PR_TARGETBRANCH}}"
 
-            #QA VALIDATION
-            - name: 'Check Only QA without Test Class'
-              if: ${{ env.PR_TARGETBRANCH == 'QA' && env.APEX_TESTS == '' }}
-              run: |
-                  sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly  --json
+            # #CI VALIDATION STEP
+            # - name: 'Check Only CI without Test Class'
+            #   if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
+            #   run: |
+            #       sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly  --json
 
-            - name: 'Check Only QA with Test Class'
-              if: ${{ env.PR_TARGETBRANCH == 'QA' && env.APEX_TESTS != 'all' && env.APEX_TESTS != '' }}
-              run: |
-                  sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
+            # - name: 'Check Only CI with Test Class'
+            #   if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS != 'all' && env.APEX_TESTS != '' }}
+            #   run: |
+            #       sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
             
-            - name: 'Deploy destructive changes (if any)'
-              if: ${{ env.PR_TARGETBRANCH == 'QA' }}
-              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" -u integration_qa --checkonly --ignorewarnings 
+            # - name: 'Deploy destructive changes (if any)'
+            #   if: ${{ env.PR_TARGETBRANCH == 'CI' }}
+            #   run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings 
 
-            #UAT VALIDATION TODO: change username to uat
-            - name: 'Check Only UAT without Test Class'
-              if: ${{ env.PR_TARGETBRANCH == 'UAT' && env.APEX_TESTS == '' }}
-              run: |
-                  sfdx force:source:deploy -u integration_uat -p "changed-sources/force-app" --checkonly  --json
+            # #QA VALIDATION
+            # - name: 'Check Only QA without Test Class'
+            #   if: ${{ env.PR_TARGETBRANCH == 'QA' && env.APEX_TESTS == '' }}
+            #   run: |
+            #       sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly  --json
 
-            - name: 'Check Only QA with Test Class'
-              if: ${{ env.PR_TARGETBRANCH == 'UAT' && env.APEX_TESTS != 'all' && env.APEX_TESTS != '' }}
-              run: |
-                  sfdx force:source:deploy -u integration_uat -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
+            # - name: 'Check Only QA with Test Class'
+            #   if: ${{ env.PR_TARGETBRANCH == 'QA' && env.APEX_TESTS != 'all' && env.APEX_TESTS != '' }}
+            #   run: |
+            #       sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
             
-            - name: 'Deploy destructive changes (if any)'
-              if: ${{ env.PR_TARGETBRANCH == 'UAT' }}
-              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" -u integration_uat --checkonly --ignorewarnings 
+            # - name: 'Deploy destructive changes (if any)'
+            #   if: ${{ env.PR_TARGETBRANCH == 'QA' }}
+            #   run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" -u integration_qa --checkonly --ignorewarnings 
+
+            # #UAT VALIDATION TODO: change username to uat
+            # - name: 'Check Only UAT without Test Class'
+            #   if: ${{ env.PR_TARGETBRANCH == 'UAT' && env.APEX_TESTS == '' }}
+            #   run: |
+            #       sfdx force:source:deploy -u integration_uat -p "changed-sources/force-app" --checkonly  --json
+
+            # - name: 'Check Only QA with Test Class'
+            #   if: ${{ env.PR_TARGETBRANCH == 'UAT' && env.APEX_TESTS != 'all' && env.APEX_TESTS != '' }}
+            #   run: |
+            #       sfdx force:source:deploy -u integration_uat -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
+            
+            # - name: 'Deploy destructive changes (if any)'
+            #   if: ${{ env.PR_TARGETBRANCH == 'UAT' }}
+            #   run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" -u integration_uat --checkonly --ignorewarnings 
