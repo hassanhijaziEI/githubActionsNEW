@@ -194,10 +194,10 @@ jobs:
             #       echo " branch ${{env.PR_TARGETBRANCH}}"
 
             # #CI VALIDATION STEP
-            # - name: 'Check Only CI without Test Class'
+            - name: 'Check Only CI without Test Class'        
             #   if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
-            #   run: |
-            #       sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly  --json
+              run: |
+                  sfdx force:source:deploy -u integration_qa -p "changed-sources/force-app" --checkonly  --json
 
             # - name: 'Check Only CI with Test Class'
             #   if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS != 'all' && env.APEX_TESTS != '' }}
