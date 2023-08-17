@@ -95,5 +95,53 @@ jobs:
                   echo "APEX_TESTS=$TESTS" >> $GITHUB_ENV
                   echo "PR_TARGETBRANCH=$PR__TMP_TARGETBRANCH" >>  $GITHUB_ENV
                   echo " ${{env.APEX_TESTS}} "
+
+   
+            # Then we install the SFDX-Git-Delta plugin - https://github.com/scolladon/sfdx-git-delta
+            # This is an awesome plugin that allows us to extract a package.xml with the metadata
+            # that has changed between commits. I highly recommend going over the github readme 
+            # for more information on how this works.
+
+    - name: 'Installing sfdx git delta'
+      run: | 
+                  echo y | sfdx plugins:install sfdx-git-delta
+                  sfdx plugins 
+
+            # Install java as it is required for the next step
+    - name: 'Installing java'
+      run: |
+               sudo apt-get update
+               sudo apt install default-jdk
+
+            # Install SFDX scanner
+    - name: 'Installing SFDX scanner'
+      run: sfdx plugins:install @salesforce/sfdx-scanner
+
+            # Prior to setting up this workflow, you have to create a Github Secret
+            # that contains the sfdx url of the integration/qa org.
+
+            # The steps to generate the url are here 
+            # https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_auth_sfdxurl.htm
+
+            # This URL can then be used with the sfdx auth:sfdxurl:store to authenticate
+            # the sfdx project in the repositry, against the org from which the URL
+            # was generated from. This works just like that, there's no need to create
+            # connected apps or any else. 
+
+            # The URL is stored in the Github Secret named SFDX_INTEGRATION_URL
+            # so here we store the URL into a text file
+    - name: 'Populate auth file with SFDX_URL secret of integration org'
+      shell: bash
+      run: |
+                  # echo ${{ secrets.DEVHUB_TOKEN}} > ./SFDX_INTEGRATION_URL.txt
+                  echo ./authorizations/authorize_qa.txt
+
+            # Authenticate to org using the URL stored in the text file
+    - name: 'Authenticate to Integration-QA Org'
+              # run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
+              # if: ${{ env.PR_TARGETBRANCH == 'CI' || env.PR_TARGETBRANCH == 'QA' }}
+      run: sfdx auth:sfdxurl:store -f ./authorizations/authorize_qa.txt -s -a integration_qa
+            
+
  #   - name: Salesforce SFDX CLI Action
  #     uses: sfdx-actions/setup-sfdx@v1
