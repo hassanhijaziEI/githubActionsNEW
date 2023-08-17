@@ -146,7 +146,7 @@ jobs:
     - name: 'Check Only CI without Test Class'        
       #if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
       run: |
-         sfdx force:source:deploy -u GITHUB-1 -p "GITHUB-1/force-app" --checkonly --json
+         sfdx force:source:deploy -u GITHUB-1 -p "/force-app" --checkonly --json
 
  #   - name: Salesforce SFDX CLI Action
  #     uses: sfdx-actions/setup-sfdx@v1
