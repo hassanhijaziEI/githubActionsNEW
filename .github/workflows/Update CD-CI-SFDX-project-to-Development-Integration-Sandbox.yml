@@ -71,30 +71,6 @@ jobs:
     - name: Auth with the DevHub
       run: 'sfdx force:auth:sfdxurl:store -f DEVHUB_SFDX_URL.txt -a DevHub -d  > /dev/null'
 
-    - name: Create scratch org
-      run: 'sfdx force:org:create -f config/project-scratch-def.json -a my-scratch'
-      
-    - name: Push source
-      run: 'sfdx force:source:push -u my-scratch'
-
-    - name: 'Assign Permissionset'
-      run: 'sfdx force:user:permset:assign -n recipes'
-
-    - name: 'Import test data'
-      run: 'sfdx force:data:tree:import -p ./data/data-plan.json'
-
-    - name: Run tests
-      run: 'sfdx force:apex:test:run -u my-scratch --resultformat human'
-
-      #Housekeeping
-    - name: Always Delete scratch org
-      if: always()
-      run: 'sfdx force:org:delete -u my-scratch --noprompt'
-      
-    - name: Delete auth file
-      if: always()
-      run: rm -f ./DEVHUB_SFDX_URL.txt 
-
 
  #   - name: Salesforce SFDX CLI Action
  #     uses: sfdx-actions/setup-sfdx@v1
