@@ -140,7 +140,7 @@ jobs:
     - name: 'Authenticate to Integration-QA Org'
               # run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
               # if: ${{ env.PR_TARGETBRANCH == 'CI' || env.PR_TARGETBRANCH == 'QA' }}
-      run: sfdx auth:sfdxurl:store -f ./authorizations/authorize_qa.txt -s -a integration_qa
+      run: sfdx auth:sfdxurl:store -f ./authorizations/authorize_qa.txt -s -a GITHUB-1
             
 
  #   - name: Salesforce SFDX CLI Action
