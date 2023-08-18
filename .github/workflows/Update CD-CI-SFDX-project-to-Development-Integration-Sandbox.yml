@@ -160,7 +160,7 @@ jobs:
 
     # #CI VALIDATION STEP
     - name: 'Check Only CI without Test Class'        
-     # if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
+      if: ${{ env.PR_TARGETBRANCH == 'main' }}
       run: |
         sfdx force:source:deploy -u GITHUB-1 -p "changed-sources" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
 
