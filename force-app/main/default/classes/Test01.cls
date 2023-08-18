@@ -14,7 +14,13 @@ private class Test01 {
         Account acct = [SELECT Id FROM Account WHERE Name = 'TestAcct0'
             LIMIT 1
         ]; // Modify first account 
-        String hassan = Zeft.hello('hello');
+        String inputText = 'Hello, World!';
+        
+        // Act
+        String result = Zeft.hello(inputText);
+        
+        // Assert
+        System.assertEquals(inputText, result, 'Expected the same text to be returned');
         acct.Phone = '555-1212';
         // This update is local to this test method only. 
         update acct;
