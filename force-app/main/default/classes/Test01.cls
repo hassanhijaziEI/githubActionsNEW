@@ -15,9 +15,9 @@ private class Test01 {
             LIMIT 1
         ]; // Modify first account 
         String inputText = 'HellooO110, World!';
-        
+        String inputText1 = 'HellooO110, World!';
         // Act
-        String result = Zeft.hello(inputText);
+        String result = Zeft.hello(inputText,inputText1);
         
         // Assert
         System.assertEquals(inputText, result, 'Expected the same text to be returned');
