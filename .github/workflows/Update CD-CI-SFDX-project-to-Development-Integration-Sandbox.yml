@@ -162,7 +162,7 @@ jobs:
     - name: 'Check Only CI without Test Class'        
      # if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
       run: |
-        sfdx force:source:deploy -u GITHUB-1 -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
+        sfdx force:source:deploy -u GITHUB-1 -p "changed-sources" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
 
     # home/runner/work/githubActionsNEW/githubActionsNEW/
     
