@@ -14,7 +14,7 @@ private class Test01 {
         Account acct = [SELECT Id FROM Account WHERE Name = 'TestAcct0'
             LIMIT 1
         ]; // Modify first account 
-        String inputText = 'HellooO110, World!';
+        String inputText = 'HellooO1120, World!';
         String inputText1 = 'HellooO110, World!';
         // Act
         String result = Zeft.hello(inputText,inputText1);
