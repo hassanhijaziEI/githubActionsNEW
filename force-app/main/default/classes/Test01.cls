@@ -21,7 +21,7 @@ private class Test01 {
         
         // Assert
         System.assertEquals(inputText, result, 'Expected the same text to be returned');
-        acct.Phone = '555-1212';
+        acct.Phone = '555-12102';
         // This update is local to this test method only. 
         update acct;
         // Delete second account 
