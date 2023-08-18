@@ -148,7 +148,7 @@ jobs:
       run: |
         sfdx force:source:deploy -u GITHUB-1 -p force-app --checkonly --json
         
-      working-directory: scripts/apexs
+      working-directory: scripts/apex
     # home/runner/work/githubActionsNEW/githubActionsNEW/
     
           # sfdx force:source:deploy -x manifest/package.xml -l NoTestRun --checkonly -w 60 --verbose --loglevel fatal
