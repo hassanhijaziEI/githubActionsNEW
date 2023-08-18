@@ -153,8 +153,8 @@ jobs:
                   mkdir changed-sources
                   sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/
                   echo "changes sources"
-                  cd changed-sources
-                  ls
+                #   cd changed-sources
+                    # ls
             # Now we can use the sfdx scanner to scan the code in the delta directory
             # The output of the scan is stored in a file called apexScanResults.sarif
 
@@ -185,29 +185,29 @@ jobs:
             - name: 'Check Only CI without Test Class'
             #   if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
               run: |
-                  sfdx force:source:deploy -u GITHUB-1 -p "changed-sources" --checkonly  --json
+                  sfdx force:source:deploy -u GITHUB-1 -p  "changed-sources/force-app" --checkonly  --json
             - name: 'Check Only CI with Test Class'
             #   if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS != 'all' && env.APEX_TESTS != '' }}
               run: |
-                  sfdx force:source:deploy -u GITHUB-1 -p "changed-sources" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
+                  sfdx force:source:deploy -u GITHUB-1 -p  "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
             
             - name: 'Deploy destructive changes (if any)'
             #   if: ${{ env.PR_TARGETBRANCH == 'CI' }}
-              run: sfdx force:mdapi:deploy -d "changed-sources" --checkonly --ignorewarnings 
+              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings 
 
             #QA VALIDATION
             - name: 'Check Only QA without Test Class'
             #   if: ${{ env.PR_TARGETBRANCH == 'QA' && env.APEX_TESTS == '' }}
               run: |
-                  sfdx force:source:deploy -u GITHUB-1 -p "changed-sources" --checkonly  --json
+                  sfdx force:source:deploy -u GITHUB-1 -p  "changed-sources/force-app" --checkonly  --json
             - name: 'Check Only QA with Test Class'
             #   if: ${{ env.PR_TARGETBRANCH == 'QA' && env.APEX_TESTS != 'all' && env.APEX_TESTS != '' }}
               run: |
-                  sfdx force:source:deploy -u GITHUB-1 -p "changed-sources" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
+                  sfdx force:source:deploy -u GITHUB-1 -p  "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
             
             - name: 'Deploy destructive changes (if any)'
             #   if: ${{ env.PR_TARGETBRANCH == 'QA' }}
-              run: sfdx force:mdapi:deploy -d "changed-sources" -u GITHUB-1 --checkonly --ignorewarnings 
+              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" -u GITHUB-1 --checkonly --ignorewarnings 
 
             #UAT VALIDATION TODO: change username to uat
             # - name: 'Check Only UAT without Test Class'
