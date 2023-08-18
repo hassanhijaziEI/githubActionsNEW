@@ -153,6 +153,11 @@ jobs:
                   cd changed-sources
                   ls
 
+    - name: Debug Working Directory
+      run: |
+               pwd
+               ls -R
+
     # #CI VALIDATION STEP
     - name: 'Check Only CI without Test Class'        
      # if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
