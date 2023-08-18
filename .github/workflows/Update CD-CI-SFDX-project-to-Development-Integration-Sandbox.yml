@@ -142,6 +142,17 @@ jobs:
               # if: ${{ env.PR_TARGETBRANCH == 'CI' || env.PR_TARGETBRANCH == 'QA' }}
       run: sfdx auth:sfdxurl:store -f ./authorizations/authorize_qa.txt -a GITHUB-1
        
+                  # We use SFDX Git Delta to create a directory with only the metadata that has changed.
+            # this allows us to deploy only those changes, as opposed to deploying the entire branch. 
+            # This helps reducing deployment times
+    - name: 'Create delta packages for new, modified or deleted metadata'
+              run: | 
+                  mkdir changed-sources
+                  sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/
+                  echo "changes sources"
+                  cd changed-sources
+                  ls
+                  
     # #CI VALIDATION STEP
     - name: 'Check Only CI without Test Class'        
      # if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
