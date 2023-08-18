@@ -1,5 +1,6 @@
 public with sharing class Zeft {
-    public Zeft() {
-        system.debug('"test"');
+    public static String hello(String text) {
+    System.debug(text);
+    return text;
     }
 }
