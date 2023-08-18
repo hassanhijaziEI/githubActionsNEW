@@ -145,10 +145,7 @@ jobs:
     # #CI VALIDATION STEP
     - name: 'Check Only CI without Test Class'        
      # if: ${{ env.PR_TARGETBRANCH == 'CI' && env.APEX_TESTS == '' }}
-      run: |
-        sfdx force:source:deploy -u GITHUB-1 -p force-app --checkonly --json
-        
-      working-directory: scripts/apex
+      run: sfdx force:mdapi:deploy --deploydir=GITHUB-1 --testlevel=RunLocalTests --checkonly -u GITHUB-1
     # home/runner/work/githubActionsNEW/githubActionsNEW/
     
           # sfdx force:source:deploy -x manifest/package.xml -l NoTestRun --checkonly -w 60 --verbose --loglevel fatal
