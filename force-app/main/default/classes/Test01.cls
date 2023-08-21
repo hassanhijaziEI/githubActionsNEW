@@ -1,4 +1,4 @@
-@isTest444
+@isTest
 private class Test01 {
     @testSetup static void setup() {
         // Create common test accounts 
