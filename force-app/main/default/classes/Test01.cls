@@ -1,11 +1,11 @@
-@isTest
+@isTest444
 private class Test01 {
     @testSetup static void setup() {
         // Create common test accounts 
         String test;
         List < Account > testAccts = new List < Account > ();
         for (Integer i = 0; i < 2; i++) {
-            testAccts.add(new Account(Name = 'TestAcct' + i));
+            testAccts.add(new Account(Name = 'TestAcct01' + i));
         }
         insert testAccts;
     }
