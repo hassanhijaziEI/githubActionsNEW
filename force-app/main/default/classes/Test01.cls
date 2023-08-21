@@ -5,7 +5,7 @@ private class Test01 {
         String test;
         List < Account > testAccts = new List < Account > ();
         for (Integer i = 0; i < 2; i++) {
-            testAccts.add(new Account(Name = 'TestAcct01' + i));
+            testAccts.add(new Account(Name = 'TestAcct' + i));
         }
         insert testAccts;
     }
