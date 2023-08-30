@@ -5,7 +5,7 @@ private class Test01 {
         String test;
         List < Account > testAccts = new List < Account > ();
         for (Integer i = 0; i < 2; i++) {
-            testAccts.add(new Account(Name = 'TestAcct' + i));
+            testAccts.add(new Account(Name = 'TestAcct1' + i));
         }
         insert testAccts;
     }
@@ -18,7 +18,7 @@ private class Test01 {
         String inputText1 = 'HellooO110, World!';
         // Act
         String result = Zeft.hello(inputText,inputText1);
-        // test 30/8/2023
+        
         // Assert
         System.assertEquals(inputText, result, 'Expected the same text to be returned');
         acct.Phone = '555-12102';
